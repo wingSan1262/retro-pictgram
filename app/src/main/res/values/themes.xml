@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.FreeImagefeed" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="android:fontFamily">@font/vcr_mono_family</item>
+    </style>
+
+    <style name="Theme.FreeImagefeed" parent="Base.Theme.FreeImagefeed" />
+</resources>
