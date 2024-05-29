@@ -13,11 +13,13 @@ import com.example.freeimagefeed.R
 import com.example.freeimagefeed.base.base_classes.BaseModel
 import com.example.freeimagefeed.base.base_classes.BaseRvAdapter
 import com.example.freeimagefeed.base.base_classes.BaseViewHolder
+import com.example.freeimagefeed.base.extensions.scrollToEnd
 import com.example.freeimagefeed.base.extensions.setupList
 import com.example.freeimagefeed.data.local_db.CommentContentEntity
 import com.example.freeimagefeed.data.local_db.CommentEntity
 import com.example.freeimagefeed.databinding.CommentItemVhBinding
 import com.example.freeimagefeed.databinding.CommentSectionWidgetBinding
+import com.example.freeimagefeed.domain.models.PostModel
 
 
 class CommentViewHolder(
@@ -59,15 +61,16 @@ class CommentSectionWidget(context: Context, attrs: AttributeSet) : LinearLayout
     val adapter = CommentAdapter()
 
     var onComment = { comment: CommentContentEntity -> }
+    var onCollapse = { comment: CommentContentEntity, isCollapsed: Boolean -> }
+    lateinit var model : PostModel
 
-    var isCollapsed = true
     fun updateArrowCollapse(){
         vb.collapseExpandIv.setImageResource(
-            if (isCollapsed) R.drawable.arrow_triange_down
+            if (model.isCollapsed) R.drawable.arrow_triange_down
             else R.drawable.arrow_triangle_up
         )
     }
-    init {
+    fun setupViews(){
         vb.commentRecyclerView.setupList(adapter) {
 
         }
@@ -100,24 +103,36 @@ class CommentSectionWidget(context: Context, attrs: AttributeSet) : LinearLayout
                 vb.commentErrorTv.visibility = VISIBLE
             }
         }
-        updateArrowCollapse()
         vb.collapseExpandIv.setOnClickListener {
-            isCollapsed = !isCollapsed
-            updateArrowCollapse()
-            vb.commentRecyclerView.visibility = if (isCollapsed) GONE else VISIBLE
-            vb.addCommentEditText.visibility = if (isCollapsed) GONE else VISIBLE
-            vb.userNameEt.visibility = if (isCollapsed) GONE else VISIBLE
-            vb.llCommentButton.visibility = if (isCollapsed) GONE else VISIBLE
+            onCollapse(
+                CommentContentEntity(
+                    comments = adapter.items,
+                ),
+                !model.isCollapsed
+            )
         }
+        updateCollapsedView()
+        vb.commentRecyclerView.scrollToEnd()
+    }
+
+    fun updateCollapsedView(){
+        updateArrowCollapse()
+        vb.commentRecyclerView.visibility = if (model.isCollapsed) GONE else VISIBLE
+        vb.addCommentEditText.visibility = if (model.isCollapsed) GONE else VISIBLE
+        vb.userNameEt.visibility = if (model.isCollapsed) GONE else VISIBLE
+        vb.llCommentButton.visibility = if (model.isCollapsed) GONE else VISIBLE
     }
 
     public fun setup(
-        comments: List<CommentEntity>,
+        model: PostModel,
+        onCollapse :  (CommentContentEntity, Boolean) -> Unit,
         onCommentAdded: (CommentContentEntity) -> Unit
     ) {
+        this.onCollapse = onCollapse
         onComment = onCommentAdded
-        adapter.clear()
-        adapter.addAll(comments)
+        this.model = model
+        adapter.replaceAll(model.comment.comments)
+        setupViews()
         vb.commentSectionTitle.text = "Comments (${adapter.items.size})"
     }
 

@@ -22,10 +22,6 @@ class TaggedPostUseCase @Inject constructor(
         super.run(param)
         execute(
             {
-                var likedPosts: List<PostDto> = emptyList()
-                withContext(Dispatchers.IO) {
-                    likedPosts = likePostDao.getAllPosts()
-                }
                 val obtainedPosts = api.getPostByTag(
                         tag = param.tag,
                         limit = param.limit,
@@ -34,9 +30,7 @@ class TaggedPostUseCase @Inject constructor(
 
                 obtainedPosts.data = obtainedPosts.data.map {
                     it.copy(
-                        isLiked = likedPosts.any { likedPost ->
-                            likedPost.id == it.id
-                        },
+                        isLiked = likePostDao.getPostById(it.id) != null,
                         comment = commentDao.getCommentContentByPostId(it.id)
                             ?: CommentContentEntity()
                     )

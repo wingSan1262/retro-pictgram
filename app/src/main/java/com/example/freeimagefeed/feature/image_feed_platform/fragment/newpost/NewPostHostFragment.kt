@@ -32,8 +32,15 @@ class NewPostHostFragment : BaseFragment<FragmentNewPostHostBinding>() {
 
     val adapterPost = UserPostAdapter(
         ::setChip, onItemLiked = ::onItemLiked,
-        onCommenting = ::onCommenting
+        onCommenting = ::onCommenting,
+        onCollapsed = ::onItemCollapsed
     )
+
+    fun onItemCollapsed(comment: CommentContentEntity, collapsed: Boolean) {
+        adapterPost.modifyOneItem({ it.id == comment.postId }){
+            it.copy(isCollapsed = collapsed)
+        }
+    }
 
 
     fun onCommenting(comment: CommentContentEntity) {

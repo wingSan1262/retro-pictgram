@@ -30,14 +30,15 @@ class LikedPostHostFragment : BaseFragment<FragmentNewPostHostBinding>() {
 
     val viewModel: DummyApiViewModel by activityViewModels()
 
-    val adapterPost = UserPostAdapter(
-        onItemLiked = ::onItemLiked,
-        onCommenting = ::onCommenting
-    ){
+    val adapterPost = UserPostAdapter(onItemLiked = ::onItemLiked,
+        onCommenting = ::onCommenting, onCollapsed = ::onItemCollapsed
+    )
 
+    fun onItemCollapsed(comment: CommentContentEntity, collapsed: Boolean) {
+        adapterPost.modifyOneItem({ it.id == comment.postId }){
+            it.copy(isCollapsed = collapsed)
+        }
     }
-
-
 
     fun onCommenting(comment: CommentContentEntity) {
         adapterPost.modifyOneItem({

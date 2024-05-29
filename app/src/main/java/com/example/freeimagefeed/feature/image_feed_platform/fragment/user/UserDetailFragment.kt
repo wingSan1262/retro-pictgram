@@ -38,13 +38,16 @@ class UserDetailFragment : BaseFragment<FragmentUserDetailBinding>() {
     val viewModel: DummyApiViewModel by activityViewModels()
 
     val adapterPost = UserPostAdapter(onItemLiked = ::onItemLiked,
-        onCommenting = ::onCommenting
+        onCommenting = ::onCommenting, onCollapsed = ::onItemCollapsed
     )
 
+    fun onItemCollapsed(comment: CommentContentEntity, collapsed: Boolean) {
+        adapterPost.modifyOneItem({ it.id == comment.postId }){
+            it.copy(isCollapsed = collapsed)
+        }
+    }
     fun onCommenting(comment: CommentContentEntity) {
-        adapterPost.modifyOneItem({
-            it.id == comment.postId
-        }){
+        adapterPost.modifyOneItem({ it.id == comment.postId }){
             it.copy(comment = comment)
         }
         viewModel.insertComment(comment)

@@ -22,10 +22,6 @@ class LatestPostUseCase @Inject constructor(
         super.run(param)
         execute(
             {
-                var likedPosts: List<PostDto> = emptyList()
-                withContext(Dispatchers.IO) {
-                    likedPosts = likePostDao.getAllPosts()
-                }
                 val obtainedPosts = api.getLatestPost(
                         limit = param.limit,
                         page = param.page
@@ -33,9 +29,7 @@ class LatestPostUseCase @Inject constructor(
 
                 obtainedPosts.data = obtainedPosts.data.map {
                     it.copy(
-                        isLiked = likedPosts.any { likedPost ->
-                            likedPost.id == it.id
-                        },
+                        isLiked = likePostDao.getPostById(it.id) != null,
                         comment = commentDao.getCommentContentByPostId(it.id) ?: CommentContentEntity()
                     )
                 }

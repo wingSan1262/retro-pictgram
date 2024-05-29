@@ -89,10 +89,33 @@ abstract class BaseRvAdapter<VH : RecyclerView.ViewHolder?, Item>(
         }
     }
 
+    fun replaceAll(item: List<Item>?) {
+        val newItem = ArrayList(item ?: listOf())
+        if (item.isNullOrEmpty()) return
+        originalItems.clear()
+        originalItems.addAll(newItem)
+        items.clear()
+        items.addAll(newItem)
+        notifyDataSetChanged()
+    }
+
     fun modifyItem(item: Item, callback: (Item) -> Item) {
         val pos = items.indexOf(item)
-        items[pos] = callback(item)
-        notifyItemChanged(pos)
+        val originalPos = originalItems.indexOf(item)
+        val filterPos = filterItems.indexOf(item)
+
+        val modified = callback(item)
+
+        if(pos >= 0){
+            items[pos] = modified
+            notifyItemChanged(pos)
+        }
+        if(originalPos >= 0){
+            originalItems[originalPos] = modified
+        }
+        if(filterPos >= 0){
+            filterItems[filterPos] = modified
+        }
     }
 
     fun modifyOneItem(checkItem : (Item)->Boolean, callback: (Item) -> Item) {

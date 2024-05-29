@@ -217,3 +217,10 @@ fun EditText.textChanges(): Flow<CharSequence?> {
     }.onStart { emit(text) }
 }
 
+fun RecyclerView.scrollToEnd() {
+    val adapter = this.adapter
+    if (adapter != null && adapter.itemCount > 0) {
+        this.smoothScrollToPosition(adapter.itemCount - 1)
+    }
+}
+

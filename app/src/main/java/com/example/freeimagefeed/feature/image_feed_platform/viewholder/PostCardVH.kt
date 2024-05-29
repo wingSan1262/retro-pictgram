@@ -13,6 +13,7 @@ class PostCardVH(
     val vb: PostCardViewHolderBinding,
     val onPostLiked: (PostModel, Boolean) -> Unit = {a,b ->},
     val onCommenting: (CommentContentEntity) -> Unit = {},
+    val onCollapse : (CommentContentEntity, Boolean) -> Unit = {a,b ->},
     val onChipClicked: (String) -> Unit,
 ): BaseViewHolder<PostCardViewHolderBinding, PostModel>(
     vb
@@ -51,7 +52,12 @@ class PostCardVH(
                 onPostLiked(model, isLiked)
             }
             commentSectionWidget.setup(
-                model.comment.comments
+                model,
+                onCollapse = { comment, isCollapse ->
+                    val commentNew = comment.copy(postId = model.id)
+                    onCommenting(comment)
+                    onCollapse(commentNew, isCollapse)
+                }
             ){
                 val comment = it.copy(postId = model.id)
                 onCommenting(comment)

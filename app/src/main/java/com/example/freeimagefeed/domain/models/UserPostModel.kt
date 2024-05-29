@@ -22,7 +22,8 @@ data class PostModel(
     val publishDate: String,
     val owner: UserModel,
     var isLiked : Boolean = false,
-    var comment : CommentContentEntity =  CommentContentEntity()
+    var comment : CommentContentEntity =  CommentContentEntity(),
+    var isCollapsed : Boolean = true
 ) : BaseModel {
     fun toDto() = PostDto(
         id = this.id,

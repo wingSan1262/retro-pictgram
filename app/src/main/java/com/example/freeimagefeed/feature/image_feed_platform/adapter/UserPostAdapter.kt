@@ -18,6 +18,7 @@ import com.example.freeimagefeed.feature.image_feed_platform.viewholder.UserCard
 class UserPostAdapter(
     val onChipClick: (String) -> Unit = {},
     val onCommenting: (CommentContentEntity) -> Unit = {},
+    val onCollapsed: (CommentContentEntity, Boolean) -> Unit = {a,b ->},
     val onItemLiked: (PostModel, Boolean) -> Unit = {a,b ->},
     val onItemClick: (PostModel) -> Unit = {},
 ): BaseRvAdapter<PostCardVH, PostModel>(3) {
@@ -40,7 +41,8 @@ class UserPostAdapter(
             ),{ model, isLiked ->
                 onItemLiked(model, isLiked)
             },
-            onCommenting = onCommenting
+            onCommenting = onCommenting,
+            onCollapse = onCollapsed,
         ){
             onChipClick(it)
         }
